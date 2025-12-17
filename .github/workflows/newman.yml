@@ -6,7 +6,7 @@ on:
 
 jobs:
   newman:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Checkout
@@ -19,30 +19,6 @@ jobs:
 
       - name: Install Newman + HTML reporter
         run: npm i -g newman newman-reporter-htmlextra
-
-      - name: Show files
-        run: |
-          pwd
-          ls -la
-
-      - name: Preflight (GoREST status + content-type)
-        env:
-          GOREST_TOKEN: ${{ secrets.GOREST_TOKEN }}
-        run: |
-          if [ -z "$GOREST_TOKEN" ]; then echo "GOREST_TOKEN is missing"; exit 1; fi
-          curl -sS -o /dev/null -w "HTTP=%{http_code} CT=%{content_type}\n" \
-            -H "Authorization: Bearer $GOREST_TOKEN" \
-            -H "Accept: application/json" \
-            "https://gorest.co.in/public/v2/users"
-
-      - name: Debug Request (show headers + first lines)
-        env:
-          GOREST_TOKEN: ${{ secrets.GOREST_TOKEN }}
-        run: |
-          curl -i -sS \
-            -H "Authorization: Bearer $GOREST_TOKEN" \
-            -H "Accept: application/json" \
-            "https://gorest.co.in/public/v2/users" | head -n 80
 
       - name: Run collection
         env:
