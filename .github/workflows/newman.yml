@@ -23,6 +23,7 @@ jobs:
       - name: Run collection
         env:
           GOREST_TOKEN: ${{ secrets.GOREST_TOKEN }}
+	shell: cmd
         run: |
           mkdir -p newman
           newman run "GoREST API Portfolio.postman_collection.json" \
