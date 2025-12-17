@@ -1,0 +1,34 @@
+name: Newman API Tests
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  newman:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Newman
+        run: npm i -g newman newman-reporter-htmlextra
+
+      - name: Run collection
+        env:
+          GOREST_TOKEN: ${{ secrets.GOREST_TOKEN }}
+        run: |
+          newman run postman/GoREST_API_Portfolio.postman_collection.json \
+            -e postman/GoREST_Portfolio.postman_environment_NO_TOKEN.json \
+            --env-var "token=$GOREST_TOKEN" \
+            -r cli,htmlextra \
+            --reporter-htmlextra-export newman/report.html
+
+      - name: Upload report
+        uses: actions/upload-artifact@v4
+        with:
+          name: newman-report
+          path: newman/report.html
