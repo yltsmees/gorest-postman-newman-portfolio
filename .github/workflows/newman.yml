@@ -18,19 +18,21 @@ jobs:
           node-version: "20"
 
       - name: Install Newman + HTML reporter
-        run: npm i -g newman newman-reporter-htmlextra
+        shell: cmd
+        run: |
+          npm i -g newman newman-reporter-htmlextra
 
       - name: Run collection
         env:
           GOREST_TOKEN: ${{ secrets.GOREST_TOKEN }}
-	shell: cmd
+        shell: cmd
         run: |
-          mkdir -p newman
-          newman run "GoREST API Portfolio.postman_collection.json" \
-            -e "GoREST - Portfolio.postman_environment_NO_TOKEN.json" \
-            --env-var "token=$GOREST_TOKEN" \
-            -r cli,htmlextra \
-            --reporter-htmlextra-export "newman/report.html"
+          if not exist newman mkdir newman
+          newman run "GoREST API Portfolio.postman_collection.json" ^
+            -e "GoREST - Portfolio.postman_environment_NO_TOKEN.json" ^
+            --env-var "token=%GOREST_TOKEN%" ^
+            -r cli,htmlextra ^
+            --reporter-htmlextra-export "newman\report.html"
 
       - name: Upload report
         if: always()
